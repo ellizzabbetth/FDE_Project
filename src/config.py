@@ -24,8 +24,8 @@ class Settings(BaseModel):
     pinecone_region: str = os.getenv("PINECONE_REGION", "us-east-1")
 
     # Internet search
-    tavily_api_key: str = os.getenv("TAVILY_API_KEY", "")
-
+    #tavily_api_key: str = os.getenv("TAVILY_API_KEY", "")
+    firecrawl_api_key: str = os.getenv("FIRECRAWL_API_KEY", "")
     # Self-RAG controls
     top_k: int = int(os.getenv("TOP_K", "5"))
     max_support_retries: int = int(os.getenv("MAX_SUPPORT_RETRIES", "2"))

@@ -163,7 +163,7 @@ uvicorn app:app --reload
 Open:
 
 ```text
-http://127.0.0.1:8000
+http://localhost:8080/
 ```
 
 ## Add new documents from the UI
@@ -200,6 +200,8 @@ Every browser incident session has a persistent `thread_id`. The LangGraph workf
 ```text
 data/langgraph_memory.sqlite
 ```
+
+Must install SQLite Viewer Extension
 
 Example video demo:
 
@@ -254,6 +256,9 @@ This prevents a common RAG mistake where offline ingestion and runtime retrieval
 
 
 Notes
+
+
+https://www.youtube.com/watch?v=zJu6_0j9X3Y&t=9067s
 
 https://www.youtube.com/watch?v=pbAd8O1Lvm4&list=PL4HtzeC7yD6A4vDY26mWEmGnyElbBX2Iv&index=2
 
