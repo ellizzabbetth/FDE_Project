@@ -16,6 +16,13 @@ class Settings(BaseModel):
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "text-embedding-3-large")
     embedding_dimension: int = int(os.getenv("EMBEDDING_DIMENSION", "3072"))
 
+    # Grok (xAI) 
+    xai_api_key: str = os.getenv("XAI_API_KEY", "")
+    # Gemini (Google) 
+    google_api_key: str = os.getenv("GOOGLE_API_KEY", "")
+    # NVIDIA NIM 
+    nvidia_api_key: str = os.getenv("NVIDIA_API_KEY", "")
+    
     # Pinecone
     pinecone_api_key: str = os.getenv("PINECONE_API_KEY", "")
     pinecone_index_name: str = os.getenv("PINECONE_INDEX_NAME", "cloudops-sentinel-openai-self-rag")
@@ -26,6 +33,7 @@ class Settings(BaseModel):
     # Internet search
     #tavily_api_key: str = os.getenv("TAVILY_API_KEY", "")
     firecrawl_api_key: str = os.getenv("FIRECRAWL_API_KEY", "")
+
     # Self-RAG controls
     top_k: int = int(os.getenv("TOP_K", "5"))
     max_support_retries: int = int(os.getenv("MAX_SUPPORT_RETRIES", "2"))
