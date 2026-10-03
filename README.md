@@ -251,3 +251,14 @@ The application and ingestion script both import `src/vectorstore.py`. That mean
 - Pinecone namespace
 
 This prevents a common RAG mistake where offline ingestion and runtime retrieval use different embeddings or different namespaces.
+
+
+Notes
+
+https://www.youtube.com/watch?v=pbAd8O1Lvm4&list=PL4HtzeC7yD6A4vDY26mWEmGnyElbBX2Iv&index=2
+
+https://www.youtube.com/watch?v=aP99LusgLuc&pp=0gcJCS4MAYcqIYzv
+
+https://www.youtube.com/watch?v=L__a_3V49so
+
+https://www.youtube.com/watch?v=3w6j6sEVQ7E
