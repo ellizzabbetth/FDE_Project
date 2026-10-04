@@ -5,7 +5,7 @@ from openai import OpenAI
 
 for name, key, url, model in [
     ("xAI",     os.environ.get("XAI_API_KEY"),     "https://api.x.ai/v1", "grok-4.3"),
-    ("Gemini",  os.environ.get("GOOGLE_API_KEY"),  "https://generativelanguage.googleapis.com/v1beta/openai/", "gemini-2.5-flash"),
+    ("Gemini",  os.environ.get("GEMINI_API_KEY"),  "https://generativelanguage.googleapis.com/v1beta/openai/", "gemini-2.5-flash"),
     ("NVIDIA",  os.environ.get("NVIDIA_API_KEY"),  "https://integrate.api.nvidia.com/v1", "meta/llama-3.3-70b-instruct"),
 ]:
     if not key:

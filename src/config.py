@@ -10,28 +10,25 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 class Settings(BaseModel):
-    # OpenAI
-    openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
-    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-5-mini")
-    embedding_model: str = os.getenv("EMBEDDING_MODEL", "text-embedding-3-large")
+    # Gemini (Google)
+    gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
+    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+    embedding_model: str = os.getenv("EMBEDDING_MODEL", "models/gemini-embedding-001")
     embedding_dimension: int = int(os.getenv("EMBEDDING_DIMENSION", "3072"))
 
-    # Grok (xAI) 
+    # Other providers (unused by the graph right now)
     xai_api_key: str = os.getenv("XAI_API_KEY", "")
-    # Gemini (Google) 
-    google_api_key: str = os.getenv("GOOGLE_API_KEY", "")
-    # NVIDIA NIM 
     nvidia_api_key: str = os.getenv("NVIDIA_API_KEY", "")
-    
+
     # Pinecone
     pinecone_api_key: str = os.getenv("PINECONE_API_KEY", "")
-    pinecone_index_name: str = os.getenv("PINECONE_INDEX_NAME", "cloudops-sentinel-openai-self-rag")
+    pinecone_index_name: str = os.getenv("PINECONE_INDEX_NAME", "cloudops-sentinel-gemini-self-rag")
     pinecone_namespace: str = os.getenv("PINECONE_NAMESPACE", "incident-runbooks")
     pinecone_cloud: str = os.getenv("PINECONE_CLOUD", "aws")
     pinecone_region: str = os.getenv("PINECONE_REGION", "us-east-1")
 
     # Internet search
-    #tavily_api_key: str = os.getenv("TAVILY_API_KEY", "")
+    tavily_api_key: str = os.getenv("TAVILY_API_KEY", "")
     firecrawl_api_key: str = os.getenv("FIRECRAWL_API_KEY", "")
 
     # Self-RAG controls
@@ -45,7 +42,6 @@ class Settings(BaseModel):
     def database_file(self) -> Path:
         p = Path(self.database_path)
         return p if p.is_absolute() else ROOT / p
-
 
 
 @lru_cache

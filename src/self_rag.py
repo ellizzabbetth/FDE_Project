@@ -1,18 +1,23 @@
 from typing import List, TypedDict, Literal, Annotated
 import operator
 import sqlite3
+import logging
+import os
 from pathlib import Path
 from pydantic import BaseModel, Field
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
+#from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.sqlite import SqliteSaver
+from openai import OpenAI, AuthenticationError, APIError, APIStatusError
 from tavily import TavilyClient
 
 from src.config import get_settings
 from src.vectorstore import get_retriever
 
+logger = logging.getLogger(__name__)
 
 class RAGState(TypedDict, total=False):
     user_question: str
@@ -53,18 +58,24 @@ class UsefulnessDecision(BaseModel):
 
 class QueryRewrite(BaseModel):
     query: str
-
-
 def _llm():
     s = get_settings()
-    if not s.openai_api_key:
-        raise RuntimeError("OPENAI_API_KEY is not configured")
-    return ChatOpenAI(
-        api_key=s.openai_api_key,
-        model=s.openai_model,
+    if not s.gemini_api_key:
+        raise RuntimeError("GEMINI_API_KEY is not configured")
+    return ChatGoogleGenerativeAI(
+        google_api_key=s.gemini_api_key,
+        model=s.gemini_model,   # e.g. "gemini-2.5-flash"
         temperature=0,
     )
-
+     
+def _text(msg) -> str:
+    c = msg.content
+    if isinstance(c, str):
+        return c
+    return "".join(
+        p if isinstance(p, str) else p.get("text", "")
+        for p in c
+    )
 
 def _trace(state: RAGState, item: str):
     return [*(state.get("trace") or []), item]
@@ -132,7 +143,8 @@ def generate_direct(state: RAGState):
         ("system", "Answer briefly from general technical knowledge only. Do not invent organization-specific infrastructure, runbooks, credentials, incident history, or deployment procedures."),
         ("human", "{question}"),
     ])
-    ans = _llm().invoke(prompt.format_messages(question=state["question"])).content
+    #ans = _llm().invoke(prompt.format_messages(question=state["question"])).content
+    ans = _text(_llm().invoke(prompt.format_messages(question=state["question"])))
     return {"answer": ans, "source_mode": "direct", "trace": _trace(state, "Generated direct answer")}
 
 
@@ -216,7 +228,8 @@ def generate_from_context(state: RAGState):
         ("system", "You are CloudOps Sentinel, an enterprise cloud operations and incident-response copilot. Answer using only the supplied evidence. Prefer private runbooks, SOPs, architecture notes, and postmortems when present. If the evidence comes from the web, clearly label it as external guidance and never present it as an organization-specific procedure. Do not invent infrastructure facts, credentials, commands, or incident history. Provide concise, actionable troubleshooting guidance and preserve any cautions contained in the evidence."),
         ("human", "Question:\n{question}\n\nEvidence:\n{context}"),
     ])
-    ans = _llm().invoke(prompt.format_messages(question=state["question"], context=context)).content
+    #ans = _llm().invoke(prompt.format_messages(question=state["question"], context=context)).content
+    ans = _text(_llm().invoke(prompt.format_messages(question=state["question"])))
     return {"answer": ans, "context": context, "support_retries": 0, "trace": _trace(state, f"Generated answer from {state.get('source_mode','')} evidence")}
 
 
@@ -242,7 +255,8 @@ def revise_answer(state: RAGState):
         ("system", "Rewrite the answer so every factual claim is directly supported by the provided evidence. Remove unsupported interpretation and speculation. Still answer the question naturally; do not mention this verification process."),
         ("human", "Question:\n{question}\n\nCurrent answer:\n{answer}\n\nEvidence:\n{context}"),
     ])
-    ans = _llm().invoke(prompt.format_messages(question=state["question"], answer=state.get("answer", ""), context=state.get("context", ""))).content
+    #ans = _llm().invoke(prompt.format_messages(question=state["question"], answer=state.get("answer", ""), context=state.get("context", ""))).content
+    ans = _text(_llm().invoke(prompt.format_messages(question=state["question"])))
     return {"answer": ans, "support_retries": state.get("support_retries", 0)+1, "trace": _trace(state, "Revised answer for grounding")}
 
 

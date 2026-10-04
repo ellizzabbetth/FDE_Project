@@ -1,6 +1,7 @@
 from functools import lru_cache
 from pinecone import Pinecone, ServerlessSpec
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+#from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from src.config import get_settings
 
@@ -8,12 +9,12 @@ from src.config import get_settings
 @lru_cache
 def get_embeddings():
     s = get_settings()
-    if not s.openai_api_key:
-        raise RuntimeError("OPENAI_API_KEY is not configured")
-    return OpenAIEmbeddings(
-        api_key=s.openai_api_key,
-        model=s.embedding_model,
-        dimensions=s.embedding_dimension,
+    if not s.gemini_api_key:
+        raise RuntimeError("GEMINI_API_KEY is not configured")
+    return GoogleGenerativeAIEmbeddings(
+        google_api_key=s.gemini_api_key,
+        model=s.embedding_model,  # "models/gemini-embedding-001"
+        output_dimensionality=s.embedding_dimension,
     )
 
 

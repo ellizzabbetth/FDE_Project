@@ -4,3 +4,4 @@ settings = get_settings()
 
 print("OpenAI API Key:", settings.openai_api_key)
 print("OpenAI Model:", settings.openai_model)
+print("Gemini API Key:", settings.gemini_api_key)
